@@ -1,4 +1,4 @@
-version: '3'
+version: '4'
 services:
   # Postgres database for product-command-service
   command-db:
@@ -12,12 +12,12 @@ services:
       POSTGRES_USER: command_db_user
       POSTGRES_PASSWORD: command_db_password
     volumes:
-      - command-db_local_data:/var/lib/postgresql/data
+      - command_db_local_data:/var/lib/postgresql/data
 
   # PG Admin for postgres database UI
   storage-pg-admin-postgres-ui:
     image: dpage/pgadmin4
-    container_name: pgadmin4_container
+    container_name: postgres_UI
     restart: always
     ports:
       - "8088:80"
@@ -29,3 +29,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  command_db_local_data:
+  pgadmin-data:
