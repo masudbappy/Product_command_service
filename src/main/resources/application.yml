@@ -35,5 +35,10 @@ spring:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        acks: all # Behavior for replica
+        retries: 10 # Max retries
+        retry.backoff.ms: 1000
+
     topics:
       product: product-event-topic
