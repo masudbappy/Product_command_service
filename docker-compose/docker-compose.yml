@@ -1,5 +1,6 @@
-version: '4'
+version: '3'
 services:
+
   # Postgres database for product-command-service
   command-db:
     image: postgres:14.15-alpine3.20
@@ -29,6 +30,21 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
 volumes:
   command_db_local_data:
