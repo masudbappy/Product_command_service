@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  # Postgres database for product-command-service
+  command-db-setup:
+    image: postgres:14.15-alpine3.20
+    container_name: command-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: command_db
+      POSTGRES_USER: command_db_user
+      POSTGRES_PASSWORD: command_db_password
+    volumes:
+      - command_db_pg_data:/var/lib/postgresql/data
+
+  # PG Admin for postgres database UI
+  storage-pg-admin-postgres-ui-setup:
+    image: dpage/pgadmin4
+    container_name: postgres_UI
+    restart: always
+    ports:
+      - "8088:80"
+    depends_on:
+      - command-db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_USERNAME: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin

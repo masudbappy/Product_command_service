@@ -1,51 +1,27 @@
-version: '3'
+version: "3.8"
+name: "product-command"
+
 services:
-
-  # Postgres database for product-command-service
   command-db:
-    image: postgres:14.15-alpine3.20
-    container_name: command-db
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: command_db
-      POSTGRES_USER: command_db_user
-      POSTGRES_PASSWORD: command_db_password
-    volumes:
-      - command_db_local_data:/var/lib/postgresql/data
-
-  # PG Admin for postgres database UI
+    extends:
+      file: databases.yml
+      service: command-db-setup
   storage-pg-admin-postgres-ui:
-    image: dpage/pgadmin4
-    container_name: postgres_UI
-    restart: always
-    ports:
-      - "8088:80"
-    depends_on:
-      - command-db
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_USERNAME: admin
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
+    extends:
+      file: databases.yml
+      service: storage-pg-admin-postgres-ui-setup
   zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-
+    extends:
+      file: brokers.yml
+      service: zookeeper_setup
   kafka:
-    image: wurstmeister/kafka
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    extends:
+      file: brokers.yml
+      service: kafka_setup
 
 volumes:
-  command_db_local_data:
+  command_db_pg_data:
   pgadmin-data:
+  zookeeper_data:
+  zookeeper_logs:
+  kafka_data:
