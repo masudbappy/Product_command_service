@@ -1,8 +1,9 @@
-package com.ecommerce.product_command_service.com.ecommerce.service;
+package ecommerce.product.command.service;
 
-import com.ecommerce.product_command_service.com.ecommerce.dto.ProductEvent;
-import com.ecommerce.product_command_service.com.ecommerce.entity.Product;
-import com.ecommerce.product_command_service.com.ecommerce.repository.ProductRepository;
+import ecommerce.product.command.dto.ProductEvent;
+import ecommerce.product.command.entity.Product;
+import ecommerce.product.command.enums.EventType;
+import ecommerce.product.command.repository.ProductRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -25,26 +26,26 @@ public class ProductCommandService {
 
     public Product createProduct(Product product) {
         Product productEntity = productRepository.save(product);
-        ProductEvent event = new ProductEvent("CreateProduct", productEntity);
-        sendToTopic(productEntity, "CreateProduct");
+        sendToTopic(productEntity, EventType.CREATE_PRODUCT);
         return productEntity;
     }
 
     public Product updateProduct(long id, Product product) {
-        Product existingProduct = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product existingProduct = productRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Product not found"));
         existingProduct.setName(product.getName());
         existingProduct.setCategoryId(product.getCategoryId());
         existingProduct.setSubCategoryId(product.getSubCategoryId());
         existingProduct.setDescription(product.getDescription());
         Product productEntity = productRepository.save(existingProduct);
-        sendToTopic(productEntity, "UpdateProduct");
+        sendToTopic(productEntity, EventType.UPDATE_PRODUCT);
         return productEntity;
     }
 
-    private void sendToTopic(Product product, String EventType) {
+    private void sendToTopic(Product product, EventType eventType) {
         String jsonString = "";
         try {
-            jsonString = objectMapper.writeValueAsString(new ProductEvent(EventType, product));
+            jsonString = objectMapper.writeValueAsString(new ProductEvent(eventType, product));
         } catch (JsonProcessingException e) {
             log.error("Error processing JSON: {}", e.getMessage());
         }

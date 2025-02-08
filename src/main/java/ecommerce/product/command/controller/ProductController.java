@@ -1,8 +1,7 @@
-package com.ecommerce.product_command_service.com.ecommerce.controller;
+package ecommerce.product.command.controller;
 
-import com.ecommerce.product_command_service.com.ecommerce.dto.ProductEvent;
-import com.ecommerce.product_command_service.com.ecommerce.entity.Product;
-import com.ecommerce.product_command_service.com.ecommerce.service.ProductCommandService;
+import ecommerce.product.command.entity.Product;
+import ecommerce.product.command.service.ProductCommandService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

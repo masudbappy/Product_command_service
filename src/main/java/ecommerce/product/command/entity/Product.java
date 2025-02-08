@@ -1,14 +1,11 @@
-package com.ecommerce.product_command_service.com.ecommerce.entity;
+package ecommerce.product.command.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "PRODUCT_COMMAND")
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Entity @Table(name = "products")
+@NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @Builder
 @ToString(includeFieldNames = true)
 public class Product {
     @Id

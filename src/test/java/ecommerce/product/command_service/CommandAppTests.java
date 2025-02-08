@@ -1,4 +1,4 @@
-package com.ecommerce.product_command_service;
+package ecommerce.product.command_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

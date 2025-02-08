@@ -1,4 +1,4 @@
-package com.ecommerce.product_command_service;
+package ecommerce.product.command;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
