@@ -1,5 +1,6 @@
 package com.ecommerce.product_command_service.com.ecommerce.controller;
 
+import com.ecommerce.product_command_service.com.ecommerce.dto.ProductEvent;
 import com.ecommerce.product_command_service.com.ecommerce.entity.Product;
 import com.ecommerce.product_command_service.com.ecommerce.service.ProductCommandService;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productCommandService.createProduct(product);
+    public Product createProduct(@RequestBody ProductEvent productEvent) {
+        return productCommandService.createProduct(productEvent);
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable long id, @RequestBody Product product) {
-        return productCommandService.updateProduct(id, product);
+    public Product updateProduct(@PathVariable long id, @RequestBody ProductEvent productEvent) {
+        return productCommandService.updateProduct(id, productEvent);
     }
 }
