@@ -26,13 +26,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
 
     # Kafka configuration
-    spring:
-      kafka:
-        producer:
-          bootstrap-servers: localhost:9092
-          key-serializer: org.apache.kafka.common.serialization.StringSerializer
-          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topics:
+      product: product-event-topic

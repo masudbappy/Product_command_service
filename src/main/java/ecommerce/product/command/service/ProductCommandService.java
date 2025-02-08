@@ -1,33 +1,35 @@
 package ecommerce.product.command.service;
 
-import ecommerce.product.command.dto.ProductEvent;
 import ecommerce.product.command.entity.Product;
-import ecommerce.product.command.enums.EventType;
+import ecommerce.product.command.events.producers.EventProducer;
+import ecommerce.product.command.events.producers.ProductCreateEventProducer;
+import ecommerce.product.command.events.producers.ProductUpdateEventProducer;
 import ecommerce.product.command.repository.ProductRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class ProductCommandService {
     private final ProductRepository productRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final ObjectMapper objectMapper;
+    private final EventProducer<String, Object, Product> productCreateProducer;
+    private final EventProducer<String, Object, Product> productUpdateProducer;
 
     public ProductCommandService(ProductRepository productRepository,
-                                 KafkaTemplate<String, Object> kafkaTemplate,
-                                 ObjectMapper objectMapper) {
+                                 ProductCreateEventProducer productCreateEventProducer,
+                                 ProductUpdateEventProducer productUpdateEventProducer) {
         this.productRepository = productRepository;
-        this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
+        this.productCreateProducer = productCreateEventProducer;
+        this.productUpdateProducer = productUpdateEventProducer;
     }
 
     public Product createProduct(Product product) {
         Product productEntity = productRepository.save(product);
-        sendToTopic(productEntity, EventType.CREATE_PRODUCT);
+        productCreateProducer.send(productEntity, successResult -> {
+            log.info("Product create event sent successfully. Result: {}", successResult);
+        }, exception -> {
+            log.error("Error sending event to Kafka topic!", exception);
+        }) ;
         return productEntity;
     }
 
@@ -36,25 +38,11 @@ public class ProductCommandService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         product.setId(existingProduct.getId());
         Product productEntity = productRepository.save(product);
-        sendToTopic(productEntity, EventType.UPDATE_PRODUCT);
-        return productEntity;
-    }
-
-    private void sendToTopic(Product product, EventType eventType) {
-        String jsonString = "";
-        try {
-            jsonString = objectMapper.writeValueAsString(new ProductEvent(eventType, product));
-        } catch (JsonProcessingException e) {
-            log.error("Error processing JSON: {}", e.getMessage());
-        }
-        log.info("Sending message to Kafka topic: {}", jsonString);
-        kafkaTemplate.send("product-event-topic", jsonString).whenComplete((result, exception) -> {
-            if (exception != null) {
-                log.error("Error sending message to Kafka topic: {}", exception.getMessage());
-            } else {
-                log.info("Result: {}", result);
-            }
+        productUpdateProducer.send(productEntity, successResult -> {
+            log.info("Product update event sent successfully. Result: {}", successResult);
+        }, exception -> {
+            log.error("Error sending event to Kafka topic!", exception);
         });
-        log.info("Message sent to Kafka topic");
+        return productEntity;
     }
 }
