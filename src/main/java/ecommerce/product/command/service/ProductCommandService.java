@@ -18,10 +18,11 @@ public class ProductCommandService {
     private final ObjectMapper objectMapper;
 
     public ProductCommandService(ProductRepository productRepository,
-                                 KafkaTemplate<String, Object> kafkaTemplate) {
+                                 KafkaTemplate<String, Object> kafkaTemplate,
+                                 ObjectMapper objectMapper) {
         this.productRepository = productRepository;
         this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     public Product createProduct(Product product) {
@@ -31,13 +32,10 @@ public class ProductCommandService {
     }
 
     public Product updateProduct(long id, Product product) {
-        Product existingProduct = productRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Product not found"));
-        existingProduct.setName(product.getName());
-        existingProduct.setCategoryId(product.getCategoryId());
-        existingProduct.setSubCategoryId(product.getSubCategoryId());
-        existingProduct.setDescription(product.getDescription());
-        Product productEntity = productRepository.save(existingProduct);
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setId(existingProduct.getId());
+        Product productEntity = productRepository.save(product);
         sendToTopic(productEntity, EventType.UPDATE_PRODUCT);
         return productEntity;
     }
