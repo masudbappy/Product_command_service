@@ -25,11 +25,10 @@ public abstract class AbstractProducer<K, V, O> implements EventProducer<K, V, O
 
     public CompletableFuture<SendResult<K, V>> send(O object, Consumer<SendResult<K, V>> onSuccess,
                                                     Consumer<Throwable> onFailure) {
-        K key = getKey(object);
         V value = null;
         try {
             value = getValue(object);
-        } catch (Exception _) {
+        } catch (Exception ignored) {
             log.error("Error processing value conversion!");
         }
 
