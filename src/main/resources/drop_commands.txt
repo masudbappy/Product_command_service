@@ -1,4 +1,4 @@
-drop table variant
+drop table variant;
 drop table customizable_property;
 drop table product_tags;
 drop table tags;
