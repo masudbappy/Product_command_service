@@ -13,6 +13,7 @@ import java.util.List;
 public class Category extends BaseEntity{
     @NotBlank
     @Size(max = 255)
+    @Column(nullable = false, length = 255, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
