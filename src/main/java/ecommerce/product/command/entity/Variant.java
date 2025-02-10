@@ -23,6 +23,7 @@ public class Variant extends BaseEntity{
     private Integer quantity;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @NotNull

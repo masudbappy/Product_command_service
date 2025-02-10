@@ -41,6 +41,7 @@ public class Product extends BaseEntity {
     private SubCategory subCategory;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     @Size(max = 10000, min = 10)
     @NotBlank
     private String description;
