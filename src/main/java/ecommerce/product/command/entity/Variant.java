@@ -7,19 +7,23 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@Entity @Getter @Setter
+@Entity
+@Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
-@Table(indexes = @Index(name = "idx_variant_product", columnList = "product_id"))
-public class Variant extends BaseEntity{
+@Table(name = "variants", indexes = @Index(name = "idx_variant_product", columnList = "product_id"))
+public class Variant extends BaseEntity {
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(min = 2, max = 255)  // Specify size constraints based on your requirements
+    @Column(nullable = false, length = 255)
     private String name;
 
+    @NotNull
     @Min(0)
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer quantity;
 
     @Lob
@@ -28,5 +32,6 @@ public class Variant extends BaseEntity{
 
     @NotNull
     @Min(0)
+    @Column(nullable = false)
     private Double price;
 }
