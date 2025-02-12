@@ -1,52 +1,47 @@
 DROP TABLE IF EXISTS variants CASCADE;
 DROP TABLE IF EXISTS product_tags CASCADE;
-DROP TABLE IF EXISTS customizable_property CASCADE;
+DROP TABLE IF EXISTS customizable_properties CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
-DROP TABLE IF EXISTS shop CASCADE;
-DROP TABLE IF EXISTS sub_category CASCADE;
-DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS shops CASCADE;
+DROP TABLE IF EXISTS sub_categories CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TYPE IF EXISTS product_status;
 
 -----------------------------------------------------------------
 -- Category table
-CREATE TABLE category (
-                          id SERIAL PRIMARY KEY,
-                          name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
-                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE categories (
+                            id SERIAL PRIMARY KEY,
+                            name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
+                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX idx_category_name ON category(id);
-CREATE INDEX idx_category_name2 ON category(id);
-CREATE INDEX idx_category_name3 ON category(id);
-CREATE INDEX idx_category_name4 ON category(id);
-
-INSERT INTO category(name) VALUES ('test');
+CREATE INDEX idx_categories_name ON categories(name);
 
 -----------------------------------------------------------------
 -- Sub category table
-CREATE TABLE sub_category (
-                              id SERIAL PRIMARY KEY,
-                              name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
-                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE sub_categories (
+                                id SERIAL PRIMARY KEY,
+                                name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
+                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- Foreign key references
-                              category_id INTEGER REFERENCES category(id) NOT NULL
+                                category_id INTEGER REFERENCES category(id) NOT NULL
 );
-CREATE INDEX idx_sub_category_name_1 ON sub_category(name);
+CREATE INDEX idx_sub_categories_name_1 ON sub_categories(name);
 
 -----------------------------------------------------------------
 -- Shop table
-CREATE TABLE shop (
-                      id BIGSERIAL PRIMARY KEY,
-                      name VARCHAR(255) NOT NULL CHECK(length(name) >= 3),
-                      description TEXT CHECK (length(description) <= 2000),
-                      image_url VARCHAR(2048) CHECK(image_url LIKE 'http%' OR image_url IS NULL),
-                      banner_url VARCHAR(2048) CHECK(image_url LIKE 'http%' OR image_url IS NULL),
-                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE shops (
+                       id BIGSERIAL PRIMARY KEY,
+                       name VARCHAR(255) NOT NULL CHECK(length(name) >= 3),
+                       description TEXT CHECK (length(description) <= 2000),
+                       image_url VARCHAR(2048) CHECK(image_url LIKE 'http%' OR image_url IS NULL),
+                       banner_url VARCHAR(2048) CHECK(image_url LIKE 'http%' OR image_url IS NULL),
+                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX idx_shop_id ON shop(id);
+CREATE INDEX idx_shops_id ON shops(id);
 
 -----------------------------------------------------------------
 -- Product table
@@ -62,8 +57,8 @@ CREATE TABLE products (
 
     -- Foreign key references
                           category_id INTEGER REFERENCES category(id) NOT NULL,
-                          sub_category_id INTEGER REFERENCES sub_category(id) NOT NULL,
-                          shop_id BIGINT REFERENCES shop(id) NOT NULL
+                          sub_category_id INTEGER REFERENCES sub_categories(id) NOT NULL,
+                          shop_id BIGINT REFERENCES shops(id) NOT NULL
 );
 CREATE INDEX "idx_product_name" ON products(name);
 CREATE INDEX "idx_product_price" ON products(price);
@@ -95,23 +90,23 @@ CREATE INDEX "idx_variant_product_id" ON variants(product_id);
 
 -----------------------------------------------------------------
 -- Customizable property table
-CREATE TABLE customizable_property(
-                                      id BIGSERIAL PRIMARY KEY,
-                                      param_name VARCHAR(255) NOT NULL,
-                                      param_value VARCHAR(255) NOT NULL,
+CREATE TABLE customizable_properties(
+                                        id BIGSERIAL PRIMARY KEY,
+                                        param_name VARCHAR(255) NOT NULL,
+                                        param_value VARCHAR(255) NOT NULL,
 
     -- Foreign key
-                                      product_id BIGINT REFERENCES products(id)
+                                        product_id BIGINT REFERENCES products(id)
 );
-CREATE INDEX "idx_customizable_property_product_id" ON customizable_property USING HASH(product_id);
+CREATE INDEX "idx_customizable_properties_product_id" ON customizable_properties USING HASH(product_id);
 
 -----------------------------------------------------------------
 -- Tag + product table
-CREATE TABLE product_tag(
-                            id BIGSERIAL PRIMARY KEY,
+CREATE TABLE product_tags(
+                             id BIGSERIAL PRIMARY KEY,
 
     -- Foreign key
-                            product_id BIGINT REFERENCES products(id),
-                            tag_id BIGINT REFERENCES tags(id)
+                             product_id BIGINT REFERENCES products(id),
+                             tag_id BIGINT REFERENCES tags(id)
 );
-CREATE INDEX "idx_product_tag_product_id" ON product_tag USING HASH(product_id);
+CREATE INDEX "idx_product_tag_product_id" ON product_tags USING HASH(product_id);
