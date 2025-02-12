@@ -10,7 +10,7 @@ DROP TYPE IF EXISTS product_status;
 
 -- Category table
 CREATE TABLE categories (
-                            id SERIAL PRIMARY KEY,
+                            id BIGSERIAL PRIMARY KEY,
                             name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -19,12 +19,12 @@ CREATE INDEX idx_categories_name ON categories(name);
 
 -- Sub category table
 CREATE TABLE sub_categories (
-                                id SERIAL PRIMARY KEY,
+                                id BIGSERIAL PRIMARY KEY,
                                 name VARCHAR(255) NOT NULL UNIQUE CHECK(name = lower(name) AND length(name) >= 3),
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- Foreign key references
-                                category_id INTEGER REFERENCES categories(id) NOT NULL
+                                category_id BIGINT REFERENCES categories(id) NOT NULL
 );
 CREATE INDEX idx_sub_categories_name_1 ON sub_categories(name);
 
@@ -54,8 +54,8 @@ CREATE TABLE products (
                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     -- Foreign key references
-                          category_id INTEGER REFERENCES categories(id) NOT NULL,
-                          sub_category_id INTEGER REFERENCES sub_categories(id) NOT NULL,
+                          category_id BIGINT REFERENCES categories(id) NOT NULL,
+                          sub_category_id BIGINT REFERENCES sub_categories(id) NOT NULL,
                           shop_id BIGINT REFERENCES shops(id) NOT NULL
 );
 CREATE INDEX "idx_product_name" ON products(name);
@@ -65,7 +65,7 @@ CREATE INDEX "idx_product_shop_id_and_status" ON products(shop_id, status);
 
 -- Tag table
 CREATE TABLE tags (
-                      id SERIAL PRIMARY KEY,
+                      id BIGSERIAL PRIMARY KEY,
                       name VARCHAR(15) CHECK(length(name) >= 2 AND length(name) <= 15 AND name = lower(name)),
                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -79,6 +79,7 @@ CREATE TABLE variants(
                          name VARCHAR(30) CHECK(length(name) >=2),
                          quantity INTEGER DEFAULT 0 CHECK(quantity >= 0),
                          price DOUBLE PRECISION NOT NULL CHECK(price >= 0),
+                         description TEXT,
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -116,35 +117,35 @@ CREATE INDEX "idx_product_tag_product_id" ON product_tags USING HASH(product_id)
 -- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx TRIGGERS xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 -- Function to update the updated_at column
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- CREATE OR REPLACE FUNCTION update_updated_at_column()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--     NEW.updated_at = CURRENT_TIMESTAMP;
+-- RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
 -- Create triggers for each table that requires automatic updated_at updates
-CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_sub_categories_updated_at BEFORE UPDATE ON sub_categories
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_shops_updated_at BEFORE UPDATE ON shops
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_tags_updated_at BEFORE UPDATE ON tags
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_variants_updated_at BEFORE UPDATE ON variants
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_customizable_properties_updated_at BEFORE UPDATE ON customizable_properties
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_product_tags_updated_at BEFORE UPDATE ON product_tags
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_sub_categories_updated_at BEFORE UPDATE ON sub_categories
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_shops_updated_at BEFORE UPDATE ON shops
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_tags_updated_at BEFORE UPDATE ON tags
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_variants_updated_at BEFORE UPDATE ON variants
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_customizable_properties_updated_at BEFORE UPDATE ON customizable_properties
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- CREATE TRIGGER update_product_tags_updated_at BEFORE UPDATE ON product_tags
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
