@@ -1,8 +1,0 @@
-drop table variant;
-drop table customizable_property;
-drop table product_tags;
-drop table tags;
-drop table products;
-drop table shop;
-drop table sub_category;
-drop table category;
