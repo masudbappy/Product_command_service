@@ -22,7 +22,7 @@ import java.util.List;
 public class Product extends BaseEntity {
 
     @NotBlank
-    @Size(min = 4, max = 255)
+    @Size(min = 3, max = 255)
     @Column(nullable = false, length = 255)
     private String name;
 
